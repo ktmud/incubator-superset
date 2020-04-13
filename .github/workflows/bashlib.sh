@@ -16,6 +16,13 @@
 # limitations under the License.
 #
 
+# Echo only when not in parallel mode
+say() {
+  if [[ ${INPUT_PARALLEL^^} != 'TRUE' ]]; then
+    echo $1
+  fi
+}
+
 # default command to run when the `run` input is empty
 default-setup-command() {
   pip-install
@@ -28,11 +35,11 @@ pip-install() {
   # Don't use pip cache as it doesn't seem to help much.
   # cache-restore pip
 
-  echo "::group::Install Python pacakges"
+  say "::group::Install Python pacakges"
   pip install -r requirements.txt
   pip install -r requirements-dev.txt
   pip install -e ".[postgres,mysql]"
-  echo "::endgroup::"
+  say "::endgroup::"
 
   # cache-save pip
 }
@@ -43,11 +50,11 @@ npm-install() {
 
   cache-restore npm
 
-  echo "::group::Install npm packages"
+  say "::group::Install npm packages"
   echo "npm: $(npm --version)"
   echo "node: $(node --version)"
   npm ci
-  echo "::endgroup::"
+  say "::endgroup::"
 
   cache-save npm
 }
@@ -55,9 +62,9 @@ npm-install() {
 build-assets() {
   cd $GITHUB_WORKSPACE/superset-frontend
 
-  echo "::group::Build static assets"
+  say "::group::Build static assets"
   npm run build -- --no-progress
-  echo "::endgroup::"
+  say "::endgroup::"
 }
 
 npm-build() {
@@ -79,20 +86,46 @@ cypress-install() {
 
   cache-restore cypress
 
-  echo "::group::Install Cypress"
+  say "::group::Install Cypress"
   npm ci
-  echo "::endgroup::"
+  say "::endgroup::"
 
   cache-save cypress
 }
 
 testdata() {
   cd $GITHUB_WORKSPACE
-
-  echo "::group::Load test data"
+  say "::group::Load test data"
   superset db upgrade
   superset load_test_users
   superset load_examples --load-test-data
   superset init
-  echo "::endgroup::"
+  say "::endgroup::"
+}
+
+setup-postgres() {
+  say "::group::Initialize database"
+  psql "postgresql://superset:superset@127.0.0.1:15432/superset" <<-EOF
+    DROP SCHEMA IF EXISTS sqllab_test_db;
+    CREATE SCHEMA sqllab_test_db;
+    DROP SCHEMA IF EXISTS admin_database;
+    CREATE SCHEMA admin_database;
+EOF
+  say "::endgroup::"
+}
+
+setup-mysql() {
+  say "::group::Initialize database"
+  mysql -h 127.0.0.1 -P 13306 -u root --password=root <<-EOF
+    DROP DATABASE IF EXISTS superset;
+    CREATE DATABASE superset DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+    DROP DATABASE IF EXISTS sqllab_test_db;
+    CREATE DATABASE sqllab_test_db DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+    DROP DATABASE IF EXISTS admin_database;
+    CREATE DATABASE admin_database DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+    CREATE USER 'superset'@'%' IDENTIFIED BY 'superset';
+    GRANT ALL ON *.* TO 'superset'@'%';
+    FLUSH PRIVILEGES;
+EOF
+  say "::endgroup::"
 }
