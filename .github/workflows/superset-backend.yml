@@ -66,15 +66,10 @@ jobs:
       REDIS_PORT: 16379
     services:
       postgres:
-        image: postgres:10.1-alpine
+        image: postgres:10-alpine
         env:
           POSTGRES_USER: superset
           POSTGRES_PASSWORD: superset
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
         ports:
           - 15432:5432
       redis:
@@ -114,14 +109,9 @@ jobs:
       REDIS_PORT: 16379
     services:
       mysql:
-        image: mysql:5.7
+        image: yobasystems/alpine-mariadb:10.4.12
         env:
           MYSQL_ROOT_PASSWORD: root
-        options: >-
-          --health-cmd="mysqladmin ping"
-          --health-interval=5s
-          --health-timeout=2s
-          --health-retries=3
         ports:
           - 13306:3306
       redis:
