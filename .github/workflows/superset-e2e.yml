@@ -63,6 +63,7 @@ jobs:
     - name: Cypress run SQL Lab (with backend persist)
       env:
         SUPERSET_CONFIG: tests.superset_test_config_sqllab_backend_persist
+        SUPERSET__SQLALCHEMY_DATABASE_URI: postgresql+psycopg2://superset:superset@127.0.0.1:15432/superset
         CYPRESS_GROUP: backend persist
         CYPRESS_PATH: 'cypress/integration/sqllab/*'
       run: |
