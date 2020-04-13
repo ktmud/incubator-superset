@@ -1,0 +1,123 @@
+name: Python
+
+on:
+  # only build on direct push to `master` branch
+  push:
+    branches: [ master ]
+    paths:
+    - ./**/*.py
+    - superset/**
+    - tests/**
+    - requirements*.txt
+  # but also build on pull requests to any branch
+  # (the so-called feature branch)
+  pull_request:
+    paths:
+    - ./**/*.py
+    - superset/**
+    - tests/**
+    - setup.py
+    - requirements*.txt
+
+jobs:
+  python-lint: &python-job
+    runs-on: &runs-on ubuntu-18.04
+    strategy: &strategy
+      matrix:
+        python-version: [3.6]
+    env:
+      CI: github-actions
+      PYTHON_LINT_TARGET: setup.py superset tests
+    steps:
+    - &checkout-code
+      name: Checkout code
+      uses: actions/checkout@v2
+    - &setup-python
+      name: Setup Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+    - &install-dependencies
+      name: Install dependencies
+      uses: apache-superset/cached-dependencies@1d9cb401cfac282356e990a15e98bf05faae1e91
+    - name: black
+      run: black --check $(echo $PYTHON_LINT_TARGET)
+    - name: mypy
+      run: mypy $(echo $PYTHON_LINT_TARGET)
+    - name: isort
+      run: isort --check-only --recursive $(echo $PYTHON_LINT_TARGET)
+    - name: pylint
+      # `-j 0` run Pylint in parallel
+      run: pylint -j 0 superset
+
+  python-test-postgres: &python-test-job
+    runs-on: *runs-on
+    strategy: *strategy
+    env: &python-test-env
+      PYTHONPATH: ${{ github.workspace }}
+      SUPERSET_CONFIG: tests.superset_test_config
+      SUPERSET__SQLALCHEMY_DATABASE_URI:
+        postgresql+psycopg2://superset:superset@127.0.0.1:15432/superset
+      REDIS_PORT: 16379
+      DB_SETUP_COMMAND: setup-postgres  # defined in `bashlib.sh`
+      CODECOV_FLAG: unittest,python,postgres
+    services:
+      redis: &redis
+        image: redis:5-alpine
+        ports:
+          - 16379:6379
+      postgres:
+        image: postgres:10-alpine
+        env:
+          POSTGRES_USER: superset
+          POSTGRES_PASSWORD: superset
+        ports:
+          # Use custom ports for services to avoid accidentally connecting to
+          # GitHub action runner's default installations
+          - 15432:5432
+    steps:
+    - *checkout-code
+    - *setup-python
+    - <<: *install-dependencies
+      with:
+        run: |
+          pip-install
+          {{ env.DB_SETUP_COMMAND }}
+    - &run-unittests
+      name: Python unit tests
+      run: |
+        ./scripts/python_tests.sh
+    - &upload-codecov
+      name: Upload code coverage
+      run: |
+        bash <(curl -s https://codecov.io/bash) -cF ${{ env.CODECOV_FLAG }}
+
+  python-test-sqlite:
+    <<: *python-test-job
+    env:
+      <<: *python-test-env
+      CODECOV_FLAG: unittest,python,sqlite
+      SUPERSET__SQLALCHEMY_DATABASE_URI:
+        sqlite:///${{ github.workspace }}/.temp/unittest.db
+
+  python-test-mysql:
+    <<: *python-test-job
+    strategy:
+      matrix:
+        # run unit tests in multiple versions just for fun
+        # (3.8 is not supported yet, some dependencies need an update)
+        python-version: [3.6, 3.7]
+    env:
+      <<: *python-test-env
+      SUPERSET__SQLALCHEMY_DATABASE_URI:
+        mysql+mysqldb://superset:superset@127.0.0.1:13306/superset?charset=utf8mb4&binary_prefix=true
+      DB_SETUP_COMMAND: setup-mysql
+      CODECOV_FLAG: unittest,python,mysql
+    services:
+      redis: *redis
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - 13306:3306
