@@ -18,7 +18,8 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
-import Select from 'react-select';
+// TODO: refactor this with `import { AsyncSelect } from src/components/Select`
+import { Select } from 'src/components/Select';
 import { t } from '@superset-ui/translation';
 import { SupersetClient } from '@superset-ui/connection';
 import getClientErrorObject from '../utils/getClientErrorObject';
@@ -42,7 +43,7 @@ const defaultProps = {
   onAsyncError: () => {},
 };
 
-class AsyncSelect extends React.PureComponent {
+class SupersetAsyncSelect extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -98,7 +99,7 @@ class AsyncSelect extends React.PureComponent {
   }
 }
 
-AsyncSelect.propTypes = propTypes;
-AsyncSelect.defaultProps = defaultProps;
+SupersetAsyncSelect.propTypes = propTypes;
+SupersetAsyncSelect.defaultProps = defaultProps;
 
-export default AsyncSelect;
+export default SupersetAsyncSelect;
