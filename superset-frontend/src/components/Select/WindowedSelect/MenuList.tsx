@@ -118,13 +118,12 @@ export default function MenuList<OptionType extends OptionTypeBase>({
     return <div style={style}>{data[index]}</div>;
   };
 
-  const lastSelected = getLastSelected(children);
-
   useEffect(() => {
+    const lastSelected = getLastSelected(children);
     if (listRef.current) {
       listRef.current.scrollToItem(lastSelected);
     }
-  }, [lastSelected]);
+  }, [children]);
 
   return (
     <WindowedList

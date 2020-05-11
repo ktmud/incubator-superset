@@ -193,23 +193,22 @@ export const DEFAULT_STYLES: PartialStylesConfig = {
   ) => {
     let color = colors.textDefault;
     let backgroundColor = colors.lightest;
-    let activeBackgroundColor = backgroundColor;
     if (isFocused) {
-      backgroundColor = colors.grayBg;
-      activeBackgroundColor = colors.menuHover;
+      backgroundColor = colors.grayBgDarker;
     } else if (isDisabled) {
       color = '#ccc';
     }
     return [
       provider,
       css`
+        cursor: pointer;
         line-height: ${lineHeight}px;
         font-size: ${fontSize}px;
         background-color: ${backgroundColor};
         color: ${color};
         font-weight: ${isSelected ? 600 : 400};
-        &:active {
-          background-color: ${activeBackgroundColor};
+        &:hover:active {
+          background-color: ${colors.grayBg};
         }
       `,
     ];
@@ -243,9 +242,22 @@ export const DEFAULT_STYLES: PartialStylesConfig = {
   }),
 };
 
-const { ClearIndicator, DropdownIndicator } = defaultComponents;
+const { ClearIndicator, DropdownIndicator, Option } = defaultComponents;
 
 export const DEFAULT_COMPONENTS: SelectComponentsConfig<any> = {
+  Option: ({ children, innerProps, data, ...props }) => (
+    <Option
+      {...props}
+      data={data}
+      innerProps={{
+        ...innerProps,
+        // @ts-ignore
+        style: data && data.style ? data.style : null,
+      }}
+    >
+      {children}
+    </Option>
+  ),
   ClearIndicator: props => (
     <ClearIndicator {...props}>
       <i className="fa">×</i>

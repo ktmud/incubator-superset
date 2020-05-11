@@ -97,20 +97,18 @@ class FilterBox extends React.Component {
       // this flag is used by non-instant filter, to make the apply button enabled/disabled
       hasChanged: false,
     };
-    this.changeFilter = this.changeFilter.bind(this);
-    this.onFilterMenuClose = this.onFilterMenuClose.bind(this);
+    this.onFilterMenuClose = () => {
+      this.props.onFilterMenuClose();
+    };
     this.onFilterMenuOpen = (...args) => {
       return this.props.onFilterMenuOpen(this.props.chartId, ...args);
     };
-    this.onFocus = this.onFilterMenuOpen;
-    this.onBlur = this.onFilterMenuClose;
     this.onOpenDateFilterControl = (...args) => {
       return this.onFilterMenuOpen(TIME_RANGE, ...args);
     };
-  }
-
-  onFilterMenuClose() {
-    this.props.onFilterMenuClose();
+    this.onFocus = this.onFilterMenuOpen;
+    this.onBlur = this.onFilterMenuClose;
+    this.changeFilter = this.changeFilter.bind(this);
   }
 
   getControlData(controlName) {

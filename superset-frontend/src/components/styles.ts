@@ -30,6 +30,8 @@ export const supersetColors = {
   grayLight: '#cfd8dc',
   gray: '#879399',
   grayBg: '#f5f5f5',
+  grayBgDarker: '#e8e8e8', // select option menu hover
+  grayBgDarkest: '#d2d2d2', // table cell bar chart
   grayHeading: '#a3a3a3',
   menuHover: '#f2f3f5',
   lightest: '#fff',
