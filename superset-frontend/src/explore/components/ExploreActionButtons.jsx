@@ -44,7 +44,7 @@ export default function ExploreActionButtons({
   queryResponse,
   slice,
 }) {
-  const exportToCSVClasses = cx('btn btn-default btn-sm', {
+  const exportToCSVClasses = cx('btn btn-secondary btn-sm', {
     'disabled disabledButton': !canDownload,
   });
   const doExportCSV = exportChart.bind(this, {
@@ -75,7 +75,7 @@ export default function ExploreActionButtons({
       {latestQueryFormData && (
         <a
           onClick={doExportChart}
-          className="btn btn-default btn-sm"
+          className="btn btn-secondary btn-sm"
           title={t('Export to .json')}
           target="_blank"
           rel="noopener noreferrer"

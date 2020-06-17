@@ -234,6 +234,7 @@ export class DisplayQueryButton extends React.PureComponent {
           </span>
         }
         bsSize="sm"
+        bsStyle="secondary"
         pullRight
         id="query"
       >

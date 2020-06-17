@@ -88,6 +88,7 @@ export default function QueryAndSaveBtns({
           data-toggle="modal"
           disabled={saveButtonDisabled}
           onClick={onSave}
+          bsStyle="default"
         >
           <i className="fa fa-plus-circle" /> Save
         </Button>

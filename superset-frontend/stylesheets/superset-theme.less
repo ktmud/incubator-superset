@@ -17,30 +17,67 @@
  * under the License.
  */
 @import './less/variables.less';
+@import '~bootstrap/less/mixins/buttons.less';
+
+@btn-secondary-text: #1984a0;
+@btn-secondary-bg: #e8f5f9;
+@btn-secondary-bg-lighter: #f3f8fa;
+@btn-secondary-bg-darker: #def1f7;
+
+@btn-default-text: @btn-secondary-text;
+@btn-default-bg: #fff;
+@btn-default-border: #79cade;
 
 body {
   background-color: @brand-gray-lightest;
 }
 
-@btn-secondary-foreground: #1984a0;
-@btn-secondary-background: #e8f5f9;
-@btn-secondary-background-lighter: #f3f8fa;
-@btn-secondary-background-darker: #def1f7;
+.btn {
+  text-transform: uppercase;
+  &:active {
+    box-shadow: none;
+  }
+}
+
+.btn-default {
+  .button-variant(@btn-default-text, @btn-default-bg, @btn-default-border);
+  &:hover {
+    background: @btn-default-bg;
+  }
+  &:active,
+  &.active,
+  .open > .dropdown-toggle& {
+    background-color: @btn-default-bg;
+    &:hover,
+    &:focus,
+    &.focus {
+      background-color: @btn-default-bg;
+    }
+  }
+}
 
 .btn-secondary {
   &,
   &:active,
   &:hover,
   &:focus {
-    color: @btn-secondary-foreground;
+    color: @btn-secondary-text;
   }
-  background-color: @btn-secondary-background;
+  background-color: @btn-secondary-bg;
   &:hover {
-    background-color: @btn-secondary-background-lighter;
+    background-color: @btn-secondary-bg-lighter;
   }
-  &:active, &:focus {
+  &:active,
+  &:focus {
     box-shadow: none;
     outline: none;
-    background-color: @btn-secondary-background-darker;
+    background-color: @btn-secondary-bg-darker;
   }
+}
+
+.btn-group > .btn-secondary {
+  margin-left: 1px;
+}
+.btn-group > .btn-default + .btn-secondary {
+  margin-left: 0;
 }
