@@ -88,7 +88,7 @@ export default class LimitControl extends React.PureComponent {
         : '');
     return (
       <Popover id="sqllab-limit-results">
-        <div style={{ width: '100px' }}>
+        <div style={{ width: '110px' }}>
           <ControlHeader
             label={t('Row limit')}
             validationErrors={!isValid ? [t(errorMsg)] : []}

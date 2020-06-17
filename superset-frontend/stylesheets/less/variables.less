@@ -53,8 +53,8 @@
 @brand-secondary-light4: #eceef2;
 @brand-secondary-light5: #f5f5f8;
 
-@brand-text-default: #393939;
-@brand-text-secondary: #b2b2b2;
+@text-color: #393939;
+@text-muted: #b2b2b2;
 @brand-gray-light: #f0f0f0;
 @brand-gray-lightest: #f7f7f7;
 @brand-gray-tinted: #ebedf2;
@@ -71,14 +71,18 @@
 @darkest: #000000;
 
 /**************************** text-specific *****************************/
-@link: @brand-text-default;
+@link: @text-color;
 @link-hover: darken(@link, @colorstop-one);
+@code-color: @brand-secondary;
 
 /***************************** status colors ****************************/
 @success: #5ac189;
-@info: #66bcfe;
 @warning: #ff7f44;
 @danger: #e04355;
+
+@info: #66bcfe;
+@state-info-bg: #f0f8fd;
+@state-info-text: @text-color;
 
 /* general component effects */
 @shadow-highlight: @primary-color;
