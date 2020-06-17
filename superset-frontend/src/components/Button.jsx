@@ -43,7 +43,7 @@ const defaultProps = {
 const BUTTON_WRAPPER_STYLE = { display: 'inline-block', cursor: 'not-allowed' };
 
 export default function Button(props) {
-  const buttonProps = { ...props };
+  const buttonProps = { bsStyle: 'secondary', ...props };
   const tooltip = props.tooltip;
   const placement = props.placement;
   delete buttonProps.tooltip;

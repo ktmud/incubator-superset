@@ -16,35 +16,31 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-// Index .less, any imports here will be included in the final css build
+@import './less/variables.less';
 
-@import '~bootstrap/less/bootstrap.less';
-@import './fonts.less';
-@import './variables.less';
-@import './cosmo/bootswatch.less';
-
-html,
 body {
-  font-size: @font-size-base;
-  line-height: @line-height-base;
   background-color: @brand-gray-lightest;
 }
 
-body {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  display: flex;
-  flex-direction: column;
-}
+@btn-secondary-foreground: #1984a0;
+@btn-secondary-background: #e8f5f9;
+@btn-secondary-background-lighter: #f3f8fa;
+@btn-secondary-background-darker: #def1f7;
 
-header {
-  flex: 0 1 auto;
-}
-
-#app {
-  flex: 1 1 auto;
-  position: relative;
+.btn-secondary {
+  &,
+  &:active,
+  &:hover,
+  &:focus {
+    color: @btn-secondary-foreground;
+  }
+  background-color: @btn-secondary-background;
+  &:hover {
+    background-color: @btn-secondary-background-lighter;
+  }
+  &:active, &:focus {
+    box-shadow: none;
+    outline: none;
+    background-color: @btn-secondary-background-darker;
+  }
 }
