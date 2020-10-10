@@ -15,7 +15,9 @@
 # specific language governing permissions and limitations
 # under the License.
 import logging
+import time
 import unittest
+from unittest.mock import MagicMock
 
 from superset.utils.log import DBEventLogger, get_event_logger_from_cfg_value
 
@@ -42,3 +44,20 @@ class TestEventLogger(unittest.TestCase):
         # test that assignment of non AbstractEventLogger derived type raises TypeError
         with self.assertRaises(TypeError):
             get_event_logger_from_cfg_value(logging.getLogger())
+
+    def test_sync_logger(self):
+        # pylint: disable=protected-access
+        logger = DBEventLogger(async_=False)
+        logger._log = MagicMock()
+        logger.log("abc")
+        logger._log.assert_called_once_with("abc")
+
+    def test_async_logger(self):
+        # pylint: disable=protected-access
+        logger = DBEventLogger(async_=True)
+        mock = MagicMock()
+        logger._log = lambda *args: (time.sleep(0.05) or mock(*args))
+        logger.log("abc")
+        assert not mock.called
+        time.sleep(0.1)
+        mock.assert_called_once_with("abc")

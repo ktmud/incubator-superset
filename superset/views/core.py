@@ -1645,12 +1645,8 @@ class Superset(BaseSupersetView):  # pylint: disable=too-many-public-methods
             request.args.get(utils.ReservedUrlParameters.EDIT_MODE.value) == "true"
         )
 
-        # Hack to log the dashboard_id properly, even when getting a slug
-        @event_logger.log_this
-        def dashboard(**_: Any) -> None:
-            pass
-
-        dashboard(
+        event_logger.log_with_context(
+            "dashboard",
             dashboard_id=dash.id,
             dashboard_version="v2",
             dash_edit_perm=dash_edit_perm,
@@ -1658,6 +1654,7 @@ class Superset(BaseSupersetView):  # pylint: disable=too-many-public-methods
         )
 
         dashboard_data = dash.data
+
         if is_feature_enabled("REMOVE_SLICE_LEVEL_LABEL_COLORS"):
             # dashboard metadata has dashboard-level label_colors,
             # so remove slice-level label_colors from its form_data
