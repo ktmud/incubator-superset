@@ -53,8 +53,9 @@ from sqlalchemy.schema import UniqueConstraint
 from sqlalchemy.sql import expression, Select
 from sqlalchemy_utils import EncryptedType
 
-from superset import app, db_engine_specs, is_feature_enabled, security_manager
+from superset import app, db_engine_specs, is_feature_enabled
 from superset.db_engine_specs.base import TimeGrain
+from superset.extensions import cache_manager, security_manager
 from superset.models.helpers import AuditMixinNullable, ImportExportMixin
 from superset.models.tags import FavStarUpdater
 from superset.result_set import SupersetResultSet
@@ -451,8 +452,8 @@ class Database(
         return sqla.inspect(engine)
 
     @cache_util.memoized_func(
-        key=lambda *args, **kwargs: "db:{}:schema:None:table_list",
-        attribute_in_key="id",
+        key=lambda self, *args, **kwargs: f"db:{self.id}:schema:None:table_list",
+        cache=cache_manager.data_cache,
     )
     def get_all_table_names_in_database(
         self,
@@ -466,7 +467,8 @@ class Database(
         return self.db_engine_spec.get_all_datasource_names(self, "table")
 
     @cache_util.memoized_func(
-        key=lambda *args, **kwargs: "db:{}:schema:None:view_list", attribute_in_key="id"
+        key=lambda self, *args, **kwargs: f"db:{self.id}:schema:None:view_list",
+        cache=cache_manager.data_cache,
     )
     def get_all_view_names_in_database(
         self,
@@ -480,8 +482,8 @@ class Database(
         return self.db_engine_spec.get_all_datasource_names(self, "view")
 
     @cache_util.memoized_func(
-        key=lambda *args, **kwargs: f"db:{{}}:schema:{kwargs.get('schema')}:table_list",  # type: ignore
-        attribute_in_key="id",
+        key=lambda self, schema, *args, **kwargs: f"db:{self.id}:schema:{schema}:table_list",  # type: ignore
+        cache=cache_manager.data_cache,
     )
     def get_all_table_names_in_schema(
         self,
@@ -512,8 +514,8 @@ class Database(
             logger.warning(ex)
 
     @cache_util.memoized_func(
-        key=lambda *args, **kwargs: f"db:{{}}:schema:{kwargs.get('schema')}:view_list",  # type: ignore
-        attribute_in_key="id",
+        key=lambda self, schema, *args, **kwargs: f"db:{self.id}:schema:{schema}:view_list",  # type: ignore
+        cache=cache_manager.data_cache,
     )
     def get_all_view_names_in_schema(
         self,
@@ -542,7 +544,8 @@ class Database(
             logger.warning(ex)
 
     @cache_util.memoized_func(
-        key=lambda *args, **kwargs: "db:{}:schema_list", attribute_in_key="id"
+        key=lambda self, *args, **kwargs: f"db:{self.id}:schema_list",
+        cache=cache_manager.data_cache,
     )
     def get_all_schema_names(
         self,
