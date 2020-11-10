@@ -233,7 +233,7 @@ class QueryContext:
         status = None
         query = ""
         error_message = None
-        if cache_key and cache_manager.data_cache and not self.force:
+        if cache_key and not self.force:
             cache_value = cache_manager.data_cache.get(cache_key)
             if cache_value:
                 stats_logger.incr("loading_from_cache")
