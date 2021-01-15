@@ -59,12 +59,13 @@ import {
   EchartsBoxPlotChartPlugin,
   EchartsTimeseriesChartPlugin,
 } from '@superset-ui/plugin-chart-echarts';
+import TimeTableChartPlugin from '@superset-ui/legacy-plugin-chart-time-table';
+
 import {
   AntdSelectFilterPlugin,
   AntdRangeFilterPlugin,
 } from 'src/filters/components/';
 import FilterBoxChartPlugin from '../FilterBox/FilterBoxChartPlugin';
-import TimeTableChartPlugin from '../TimeTable/TimeTableChartPlugin';
 
 export default class MainPreset extends Preset {
   constructor() {
